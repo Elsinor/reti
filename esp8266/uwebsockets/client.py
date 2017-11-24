@@ -1,10 +1,3 @@
-"""
-Websockets client for micropython
-
-Based very heavily off
-https://github.com/aaugustin/websockets/blob/master/websockets/client.py
-"""
-
 import logging
 import usocket as socket
 import ubinascii as binascii
@@ -24,17 +17,10 @@ def connect(hostname, port, path):
     Connect a websocket.
     """
     print('!!! client.py :: connect')
-    #uri = urlparse(uri)
-    #assert uri
-
-    #if __debug__: LOGGER.debug("open connection %s:%s",
-    #                            uri.hostname, uri.port)
 
     sock = socket.socket()
-    #addr = socket.getaddrinfo(uri.hostname, uri.port)
     addr = socket.getaddrinfo(hostname, port)
     addr = addr[0][-1]
-    #sock.connect(addr[0][4])
     sock.connect(addr)
 
     print('!!! client.py :: connect > 1')
