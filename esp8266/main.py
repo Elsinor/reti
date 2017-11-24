@@ -22,48 +22,24 @@ def connectToWifi():
 	while not wlan.isconnected():
 		pass
 	print('*-- Connected!')
-
 	return wlan
-
-# Connessioni
-#dhtPin = DHT11(Pin(4))
-#relayPin = Pin(5, Pin.OUT)
-
-# FIXME: se utilizzo la funzione, python decide di ammazzarmi l'istanza della classe padre
-#def connectToServer():
-	# Inizializzazione client
-#	with uwebsockets.client.connect(r'ws://palermo.linked-data.eu:8081') as websocketClient;
-#	return websocketClient;
-
 
 def main():
 	wifi = connectToWifi()
 	gc.collect()
 
 	with ws.connect('palermo.linked-data.eu', 8081, "") as wsClient:
-	#socket = connectToServer()
 
-	# Loop
-	#while (userPin.value() == 1):
+		# Loop
 		while (True):
-			# Misurazione
-			#dhtPin.measure()
-			#temp = dhtPin.temperature()
 			temp = "2";
 			# Manda al server WebSocket
 			wsClient.send(temp)
 			# Ricevi dal server WebSocket
 			response = wsClient.recv()
 
-			# Azione
-			#responseCode=int(response)
-			#if responseCode == 1:
-			#	relayPin.value(1)
-			#elif responseCode == 0:
-			#	relayPin.value(0)
 			print('*-- response: '+response)
 			time.sleep(.2)
-
 
 if __name__ == "__main__":
     main()
