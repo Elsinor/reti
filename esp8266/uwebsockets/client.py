@@ -1,9 +1,16 @@
+"""
+Websockets client for micropython
+
+Based very heavily off
+https://github.com/aaugustin/websockets/blob/master/websockets/client.py
+"""
+
 import logging
 import usocket as socket
 import ubinascii as binascii
 import urandom as random
 
-from .protocol import Websocket, urlparse
+from .protocol import Websocket
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,14 +25,15 @@ def connect(hostname, port, path):
     """
     print('!!! client.py :: connect')
 
+    #if __debug__: LOGGER.debug("open connection %s:%s",
+    #                            uri.hostname, uri.port)
+
     sock = socket.socket()
     addr = socket.getaddrinfo(hostname, port)
     addr = addr[0][-1]
     sock.connect(addr)
 
-    print('!!! client.py :: connect > 1')
     def send_header(header, *args):
-        print('!!! client.py :: connect :: send_header')
         if __debug__: LOGGER.debug(str(header), *args)
         sock.send(header % args + '\r\n')
 
@@ -33,9 +41,7 @@ def connect(hostname, port, path):
     key = binascii.b2a_base64(bytes(random.getrandbits(8)
                                     for _ in range(16)))[:-1]
 
-    #send_header(b'GET %s HTTP/1.1', uri.path or '/')
     send_header(b'GET %s HTTP/1.1', path or '/')
-    #send_header(b'Host: %s:%s', uri.hostname, uri.port)
     send_header(b'Host: %s:%s', hostname, port)
     send_header(b'Connection: Upgrade')
     send_header(b'Upgrade: websocket')
