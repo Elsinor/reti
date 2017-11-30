@@ -3,11 +3,9 @@ Websockets protocol
 """
 
 import logging
-import ure as re
 import ustruct as struct
 import urandom as random
 import usocket as socket
-from ucollections import namedtuple
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,22 +28,6 @@ CLOSE_TOO_BIG = const(1009)
 CLOSE_MISSING_EXTN = const(1010)
 CLOSE_BAD_CONDITION = const(1011)
 
-
-# FIXME: Verificare se è possibile eliminare definitivamente
-# la seguente gestione dell'urlparsing post modifiche.
-#URL_RE = re.compile(r'ws://([A-Za-z0-9\-\.]+)(?:\:([0-9]+))?(/.+)?')
-URL_RE = re.compile(r'ws://([A-Za-z0-9\-\.]+)(:([0-9]+))?(/.+)?')
-URI = namedtuple('URI', ('hostname', 'port', 'path'))
-
-def urlparse(uri):
-    """Parse ws:// URLs"""
-    match = URL_RE.match(uri)
-    #if match:
-    #    return URI(match.group(1), int(match.group(2)), match.group(3))
-    # di seguito il test statico ignorante prima dell'ignore.
-    return URI("ws://palermo.linked-data.eu", int("8081"), "")
-
-
 class Websocket:
     """
     Basis of the Websocket protocol.
@@ -56,24 +38,19 @@ class Websocket:
     is_client = False
 
     def __init__(self, sock):
-        print('!!! protocol.py :: __init__')
         self._sock = sock
         self.open = True
 
     def __enter__(self):
-        print('!!! protocol.py :: __enter__')
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        print('!!! protocol.py :: __exit__')
         self.close()
 
     def settimeout(self, timeout):
-        print('!!! protocol.py :: settimeout')
         self._sock.settimeout(timeout)
 
     def read_frame(self, max_size=None):
-        print('!!! protocol.py :: read_frame')
         """
         Read a frame from the socket.
         See https://tools.ietf.org/html/rfc6455#section-5.2 for the details.
@@ -114,7 +91,6 @@ class Websocket:
         return fin, opcode, data
 
     def write_frame(self, opcode, data=b''):
-        print('!!! protocol.py :: write_frame')
         """
         Write a frame to the socket.
         See https://tools.ietf.org/html/rfc6455#section-5.2 for the details.
@@ -157,7 +133,6 @@ class Websocket:
         self._sock.write(data)
 
     def recv(self):
-        print('!!! protocol.py :: recv')
         """
         Receive data from the websocket.
 
@@ -202,7 +177,6 @@ class Websocket:
                 raise ValueError(opcode)
 
     def send(self, buf):
-        print('!!! protocol.py :: send')
         """Send data to the websocket."""
 
         assert self.open
@@ -218,7 +192,6 @@ class Websocket:
         self.write_frame(opcode, buf)
 
     def close(self, code=CLOSE_OK, reason=''):
-        print('!!! protocol.py :: close')
         """Close the websocket."""
         if not self.open:
             return
@@ -229,7 +202,6 @@ class Websocket:
         self._close()
 
     def _close(self):
-        print('!!! protocol.py :: _close')
         if __debug__: LOGGER.debug("Connection closed")
         self.open = False
         self._sock.close()
